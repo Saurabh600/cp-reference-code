@@ -1,24 +1,26 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+typedef pair<int, int> pi;
+
 class Solution {
     public:
     vector<int> shortestPath(int N, int M, vector<vector<int>> &edges) {
-        vector<vector<pair<int, int>>> adj(N);
+        vector<vector<pi>> adj(N);
         for (auto &edge : edges) {
             adj[edge[0]].push_back({edge[1], edge[2]});
         }
 
         vector<int> vis(N, 0);
-        stack<int> st;
+        stack<int> stk;
 
-        topoSort(0, adj, vis, st);
+        topoSort(0, adj, vis, stk);
 
         vector<int> dist(N, INT_MAX);
         dist[0] = 0;
-        while (!st.empty()) {
-            auto node = st.top();
-            st.pop();
+        while (!stk.empty()) {
+            auto node = stk.top();
+            stk.pop();
 
             for (auto &pr : adj[node]) {
                 int it = pr.first;
@@ -35,14 +37,14 @@ class Solution {
     }
 
     void topoSort(int node, vector<vector<pair<int, int>>> &adj,
-                  vector<int> &vis, stack<int> &st) {
+                  vector<int> &vis, stack<int> &stk) {
         vis[node] = 1;
 
         for (auto &pr : adj[node]) {
             int it = pr.first;
-            if (!vis[it]) topoSort(it, adj, vis, st);
+            if (!vis[it]) topoSort(it, adj, vis, stk);
         }
 
-        st.push(node);
+        stk.push(node);
     }
 };

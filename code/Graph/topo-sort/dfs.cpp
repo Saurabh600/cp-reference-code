@@ -1,77 +1,22 @@
-//{ Driver Code Starts
 #include <bits/stdc++.h>
 using namespace std;
 
-// } Driver Code Ends
-class Solution {
-    public:
-    // Function to return list containing vertices in Topological order.
-    vector<int> topoSort(int V, vector<int> adj[]) {
-        // code here
-        vector<int> res;
-        int vis[V] = {0};
-        for (int i = 0; i < V; i++) {
-            if (!vis[i]) {
-                dfs(i, adj, vis, res);
-            }
-        }
-        reverse(res.begin(), res.end());
-        return res;
+void dfs(int node, vector<int> adj[], vector<int> vis, vector<int> &res) {
+    vis[node] = 1;
+    for (int it : adj[node]) {
+        if (!vis[it]) dfs(it, adj, vis, res);
     }
-
-    void dfs(int node, vector<int> adj[], int vis[], vector<int> &res) {
-        vis[node] = 1;
-        for (int it : adj[node]) {
-            if (!vis[it]) dfs(it, adj, vis, res);
-        }
-        res.push_back(node);
-    }
-};
-
-//{ Driver Code Starts.
-
-/*  Function to check if elements returned by user
- *   contains the elements in topological sorted form
- *   V: number of vertices
- *   *res: array containing elements in topological sorted form
- *   adj[]: graph input
- */
-int check(int V, vector<int> &res, vector<int> adj[]) {
-    if (V != res.size()) return 0;
-
-    vector<int> map(V, -1);
-    for (int i = 0; i < V; i++) {
-        map[res[i]] = i;
-    }
-    for (int i = 0; i < V; i++) {
-        for (int v : adj[i]) {
-            if (map[i] > map[v]) return 0;
-        }
-    }
-    return 1;
+    res.push_back(node);
 }
 
-int main() {
-    int T;
-    cin >> T;
-    while (T--) {
-        int N, E;
-        cin >> E >> N;
-        int u, v;
-
-        vector<int> adj[N];
-
-        for (int i = 0; i < E; i++) {
-            cin >> u >> v;
-            adj[u].push_back(v);
+vector<int> topoSort(int V, vector<int> adj[]) {
+    vector<int> res;
+    vector<int> vis(V, 0);
+    for (int i = 0; i < V; i++) {
+        if (!vis[i]) {
+            dfs(i, adj, vis, res);
         }
-
-        Solution obj;
-        vector<int> res = obj.topoSort(N, adj);
-
-        cout << check(N, res, adj) << endl;
     }
-
-    return 0;
+    reverse(res.begin(), res.end());
+    return res;
 }
-// } Driver Code Ends

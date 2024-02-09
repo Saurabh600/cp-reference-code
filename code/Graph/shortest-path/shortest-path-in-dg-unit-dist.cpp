@@ -5,10 +5,10 @@ class Solution {
     public:
     vector<int> shortestPath(vector<vector<int>> &edges, int N, int M,
                              int src) {
-        vector<vector<int>> adj(N);
+        vector<vector<int>> g(N);
         for (auto &edge : edges) {
-            adj[edge[0]].push_back(edge[1]);
-            adj[edge[1]].push_back(edge[0]);
+            g[edge[0]].push_back(edge[1]);
+            g[edge[1]].push_back(edge[0]);
         }
 
         queue<int> q;
@@ -24,7 +24,7 @@ class Solution {
             int node = q.front();
             q.pop();
 
-            for (int it : adj[node]) {
+            for (int it : g[node]) {
                 if (dist[it] > dist[node] + 1) {
                     dist[it] = dist[node] + 1;
                     q.push(it);
