@@ -6,18 +6,18 @@ struct Node {
     bool flag;
 
     Node() {
-        links.resize(26);
+        links.resize(128);
         flag = false;
     }
 
     bool containsKey(char ch) {
-        return links[ch - 'a'] != nullptr;
+        return links[ch] != nullptr;
     }
     Node *get(char ch) {
-        return links[ch - 'a'];
+        return links[ch];
     }
     void put(char ch, Node *node) {
-        links[ch - 'a'] = node;
+        links[ch] = node;
     }
     void setEnd() {
         flag = true;
@@ -67,11 +67,3 @@ class Trie {
         return true;
     }
 };
-
-/**
- * Your Trie object will be instantiated and called as such:
- * Trie* obj = new Trie();
- * obj->insert(word);
- * bool param_2 = obj->search(word);
- * bool param_3 = obj->startsWith(prefix);
- */
