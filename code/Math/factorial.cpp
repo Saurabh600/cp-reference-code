@@ -6,22 +6,20 @@ using ll = int64_t;
 const int N = 1e6 + 7;
 const ll MOD = 1e9 + 7;
 
-vector<ll> fact(N), inv_fact(N);
+vector<ll> fact, inv_fact;
 
 ll modmul(ll a, ll b) {
     return ((a % MOD) * (b % MOD)) % MOD;
 }
 
-ll modpow(ll a) {
-    ll x = MOD - 2;
+ll modpow(ll a, ll x, ll mod) {
+    a %= mod;
     ll res = 1;
-    a = a % MOD;
-    while (x) {
-        if (x & 1) res = modmul(res, a);
+    while (x > 0) {
+        if (x & 1) res = (res * a) % mod;
         x >>= 1;
-        a = modmul(a, a);
+        a = (a * a) % mod;
     }
-
     return res;
 }
 
@@ -37,7 +35,7 @@ void build_inverse_factorial(ll n) {
     inv_fact.resize(n);
     inv_fact[0] = 1;
     for (ll i = 1; i < n; i++) {
-        inv_fact[i] = modpow(fact[i]);
+        inv_fact[i] = modpow(fact[i], MOD - 2, MOD);
     }
 }
 

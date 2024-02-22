@@ -8,14 +8,13 @@ ll modmul(ll a, ll b) {
     return ((a % mod) * (b % mod)) % mod;
 }
 
-ll modpow(ll a, ll x) {
+ll modpow(ll a, ll x, ll mod) {
+    a %= mod;
     ll res = 1;
-    a = a % mod;
-    while (x > 1) {
-        if (x & 1) res = modmul(res, a);
+    while (x > 0) {
+        if (x & 1) res = (res * a) % mod;
         x >>= 1;
-        a = modmul(a, a);
+        a = (a * a) % mod;
     }
-
-    return res % mod;
+    return res;
 }
