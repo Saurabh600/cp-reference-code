@@ -1,29 +1,46 @@
 #include <bits/stdc++.h>
 using namespace std;
+using ll = int64_t;
 
-typedef pair<int, int> pi;
+signed main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    ll n, m;
+    cin >> n >> m;
+    vector<vector<pair<ll, ll>>> g(n + 1);
+    for (int i = 0; i < m; i++) {
+        ll u, v, w;
+        cin >> u >> v >> w;
+        g[u].push_back({v, w});
+    }
 
-class Solution {
-    public:
-    vector<int> dijkstra(int V, vector<vector<pi>> adj, int s) {
-        priority_queue<pi, vector<pi>, greater<pi>> pq;
-        vector<int> dist(V, INT_MAX);
+    vector<ll> dist(n + 1, -1);
+    dist[1] = 0;
 
-        pq.push({0, s});
-        dist[s] = 0;
+    vector<int> mark(n + 1, 0);
 
-        while (!pq.empty()) {
-            auto [_, u] = pq.top();
-            pq.pop();
+    priority_queue<pair<ll, ll>> pq;
+    pq.push({0, 1});
 
-            for (auto &[v, wt] : adj[u]) {
-                if (dist[v] > dist[u] + wt) {
-                    dist[v] = dist[u] + wt;
-                    pq.push({dist[v], v});
-                }
+    while (pq.size() > 0) {
+        auto [_, u] = pq.top();
+        pq.pop();
+
+        if (mark[u] == 1) continue;
+        mark[u] = 1;
+
+        for (auto [v, wt] : g[u]) {
+            if (dist[v] == -1 || dist[v] > dist[u] + wt) {
+                dist[v] = dist[u] + wt;
+                pq.push({-dist[v], v});
             }
         }
-
-        return dist;
     }
-};
+
+    for (int i = 1; i <= n; i++) {
+        cout << dist[i] << " ";
+    }
+    cout << '\n';
+
+    return 0;
+}
