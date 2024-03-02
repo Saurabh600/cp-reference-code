@@ -2,32 +2,21 @@
 using namespace std;
 
 class DisjointSet {
+    private:
     vector<int> parent, rank;
 
     public:
     DisjointSet(int n) {
-        parent.resize(n);
-        rank.resize(n, 0);
-        for (int i = 0; i < n; i++) {
+        parent.resize(n + 1);
+        rank.resize(n + 1, 0);
+        for (int i = 0; i <= n; i++) {
             parent[i] = i;
         }
     }
 
     int find(int node) {
         if (parent[node] == node) return node;
-
-        int root = node;
-        while (parent[root] != root) {
-            root = parent[root];
-        }
-
-        while (node != root) {
-            int next = parent[node];
-            node = parent[node];
-            node = next;
-        }
-
-        return root;
+        return parent[node] = find(parent[node]);
     }
 
     void unite(int u, int v) {
@@ -38,7 +27,7 @@ class DisjointSet {
 
         if (rank[root_u] < rank[root_v]) {
             parent[root_u] = root_v;
-        } else if (rank[root_v] > rank[root_u]) {
+        } else if (rank[root_v] < rank[root_u]) {
             parent[root_v] = root_u;
         } else {
             parent[root_u] = root_v;
