@@ -19,11 +19,6 @@
 
 - [Graph](./code/Graph/)
 
-  - [Traversal](./code/Graph/traversal/)
-
-    - [dfs](./code/Graph/traversal/dfs.cpp)
-    - [bfs](./code/Graph/traversal/bfs.cpp)
-
   - [Cycle In Graph](./code/Graph/cycle-in-graph/)
 
     - [cycle in directed graph](./code/Graph/cycle-in-graph/directed.cpp)
@@ -37,12 +32,14 @@
   - [Shortest Path](./code/Graph/shortest-path/)
 
     - [In dag](./code/Graph/shortest-path/shortest-path-in-dag.cpp)
-    - [In dg unit dist](./code/Graph/shortest-path/shortest-path-in-dg-unit-dist.cpp)
     - [dijkstra algo](./code/Graph/shortest-path/dijkstra-algo.cpp)
     - [bellman ford algo](./code/Graph/shortest-path/bellman-ford.cpp)
     - [floyd warshal algo](./code/Graph/shortest-path/floyd-warshall-algo.cpp)
 
   - [DSU](./code/Graph/dsu/)
+
     - [Disjoint Set](./code/Graph/dsu/disjoint-set.cpp)
+
   - [MST](./code/Graph/mst/)
+
     - [prims algo](./code/Graph/mst/prims-algo.cpp)
