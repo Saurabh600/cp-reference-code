@@ -1,76 +1,73 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class SegmentTree {
-  private:
-  vector<int64_t> arr;
-  vector<int64_t> seg;
-  int len;
+class SegTree {
+    private:
+    vector<int64_t> arr;
+    vector<int64_t> seg;
+    int N;
 
-  void _build_seg(int node, int ss, int se) {
-    if (ss == se) {
-      seg[node] = arr[ss];
-      return;
+    void build(int node, int x, int y) {
+        if (x == y) {
+            seg[node] = arr[x];
+        } else {
+            int m = (x + y) >> 1;
+            build(2 * node + 1, x, m);
+            build(2 * node + 2, m + 1, y);
+            seg[node] = seg[2 * node + 1] + seg[2 * node + 2];
+        }
     }
 
-    int mid = (ss + se) >> 1;
-    _build_seg(2 * node + 1, ss, mid);
-    _build_seg(2 * node + 2, mid + 1, se);
-    seg[node] = seg[2 * node + 1] ^ seg[2 * node + 2];
-  }
+    int64_t query(int node, int x, int y, int l, int r) {
+        if (x >= l && y <= r) return seg[node];
+        if (r < x || l > y) return 0;
 
-  int64_t _query(int node, int ss, int se, int qs, int qe) {
-    if (ss >= qs && se <= qe) return seg[node];
-    if (qe < ss || qs > se) return 0;
-
-    int mid = (ss + se) >> 1;
-    int64_t left = _query(2 * node + 1, ss, mid, qs, qe);
-    int64_t right = _query(2 * node + 2, mid + 1, se, qs, qe);
-    return left ^ right;
-  }
-
-  void _update(int node, int ss, int se, int idx, int val) {
-    if (ss == se) {
-      arr[idx] += val;
-      seg[node] += val;
-      return;
+        int m = (x + y) >> 1;
+        int64_t left = query(2 * node + 1, x, m, l, r);
+        int64_t right = query(2 * node + 2, m + 1, y, l, r);
+        return left + right;
     }
 
-    int mid = (ss + se) >> 1;
-    if (idx >= ss && idx <= mid) _update(2 * node + 1, ss, mid, idx, val);
-    else _update(2 * node + 2, mid + 1, se, idx, val);
-    seg[node] = seg[2 * node + 1] ^ seg[2 * node + 2];
-  }
+    void update(int node, int x, int y, int idx, int val) {
+        if (x == y) {
+            arr[idx] += val;
+            seg[node] += val;
+        } else {
+            int m = (x + y) >> 1;
+            if (idx >= x && idx <= m) update(2 * node + 1, x, m, idx, val);
+            else update(2 * node + 2, m + 1, y, idx, val);
+            seg[node] = seg[2 * node + 1] ^ seg[2 * node + 2];
+        }
+    }
 
-  public:
-  SegmentTree(vector<int64_t>& vec) {
-    this->arr = vec;
-    this->len = int(vec.size());
-    seg.resize(4 * len);
-    _build_seg(0, 0, len - 1);
-  }
+    public:
+    SegTree(vector<int64_t>& vec) {
+        this->arr = vec;
+        this->N = int(vec.size());
+        seg.resize(4 * N);
+        build(0, 0, N - 1);
+    }
 
-  int64_t query(int qs, int qe) {
-    return _query(0, 0, len - 1, qs, qe);
-  }
+    int64_t query(int qs, int qe) {
+        return query(0, 0, N - 1, qs, qe);
+    }
 
-  void update(int idx, int val) {
-    _update(0, 0, len - 1, idx, val);
-  }
+    void update(int idx, int val) {
+        update(0, 0, N - 1, idx, val);
+    }
 };
 
 int main() {
-  ios::sync_with_stdio(0), cin.tie(0);
-  int n, q;
-  cin >> n >> q;
-  vector<int64_t> vec(n);
-  for (int i = 0; i < n; i++) cin >> vec[i];
-  SegmentTree seg(vec);
-  while (q--) {
-    int a, b;
-    cin >> a >> b;
-    --a, --b;
-    cout << seg.query(a, b) << '\n';
-  }
-  return 0;
+    ios::sync_with_stdio(0), cin.tie(0);
+    int n, q;
+    cin >> n >> q;
+    vector<int64_t> vec(n);
+    for (int i = 0; i < n; i++) cin >> vec[i];
+    SegTree seg(vec);
+    while (q--) {
+        int a, b;
+        cin >> a >> b;
+        cout << seg.query(a - 1, b - 1) << '\n';
+    }
+    return 0;
 }
