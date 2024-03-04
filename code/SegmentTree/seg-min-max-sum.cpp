@@ -30,36 +30,36 @@ class SegTree {
     vector<seg_node> seg;
     int N;
 
-    void _build_seg(int node, int x, int y) {
+    void _build_seg(int i, int x, int y) {
         if (x == y) {
-            seg[node] = seg_node(arr[x]);
+            seg[i] = seg_node(arr[x]);
         } else {
             int m = (x + y) >> 1;
-            _build_seg(2 * node + 1, x, m);
-            _build_seg(2 * node + 2, m + 1, y);
-            seg[node] = seg_node(seg[2 * node + 1], seg[2 * node + 2]);
+            _build_seg(2 * i + 1, x, m);
+            _build_seg(2 * i + 2, m + 1, y);
+            seg[i] = seg_node(seg[2 * i + 1], seg[2 * i + 2]);
         }
     }
 
-    seg_node query(int node, int x, int y, int l, int r) {
-        if (x >= l && y <= r) return seg[node];
+    seg_node query(int i, int x, int y, int l, int r) {
+        if (x >= l && y <= r) return seg[i];
         if (r < x || l > y) return seg_node();
 
         int m = (x + y) >> 1;
-        auto left = query(2 * node + 1, x, m, l, r);
-        auto right = query(2 * node + 2, m + 1, y, l, r);
+        auto left = query(2 * i + 1, x, m, l, r);
+        auto right = query(2 * i + 2, m + 1, y, l, r);
         return seg_node(left, right);
     }
 
-    void update(int node, int x, int y, int idx, int val) {
+    void update(int i, int x, int y, int node, int val) {
         if (x == y) {
-            arr[idx] = val;
-            seg[node] = seg_node(arr[idx]);
+            arr[node] = val;
+            seg[i] = seg_node(arr[node]);
         } else {
             int m = (x + y) >> 1;
-            if (idx >= x && idx <= m) update(2 * node + 1, x, m, idx, val);
-            else update(2 * node + 2, m + 1, y, idx, val);
-            seg[node] = seg_node(seg[2 * node + 1], seg[2 * node + 2]);
+            if (node >= x && node <= m) update(2 * i + 1, x, m, node, val);
+            else update(2 * i + 2, m + 1, y, node, val);
+            seg[i] = seg_node(seg[2 * i + 1], seg[2 * i + 2]);
         }
     }
 
@@ -76,8 +76,8 @@ class SegTree {
         return query(0, 0, N - 1, l, r);
     }
 
-    void update(int idx, int val) {
-        update(0, 0, N - 1, idx, val);
+    void update(int node, int val) {
+        update(0, 0, N - 1, node, val);
     }
 };
 

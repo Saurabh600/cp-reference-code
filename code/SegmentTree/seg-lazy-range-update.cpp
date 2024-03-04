@@ -8,59 +8,59 @@ class SegTreeLazy {
     vector<int64_t> lazy;
     int N;
 
-    void build(int node, int x, int y) {
+    void build(int i, int x, int y) {
         if (x == y) {
-            seg[node] = arr[x];
+            seg[i] = arr[x];
         } else {
             int m = (x + y) >> 1;
-            build(2 * node + 1, x, m);
-            build(2 * node + 2, m + 1, y);
-            seg[node] = seg[2 * node + 1] + seg[2 * node + 2];
+            build(2 * i + 1, x, m);
+            build(2 * i + 2, m + 1, y);
+            seg[i] = seg[2 * i + 1] + seg[2 * i + 2];
         }
     }
 
-    int64_t query(int node, int x, int y, int l, int r) {
-        if (lazy[node] != 0) {
-            seg[node] += (y - x + 1) * lazy[node];
+    int64_t query(int i, int x, int y, int l, int r) {
+        if (lazy[i] != 0) {
+            seg[i] += (y - x + 1) * lazy[i];
             if (x != y) {
-                lazy[2 * node + 1] += lazy[node];
-                lazy[2 * node + 2] += lazy[node];
+                lazy[2 * i + 1] += lazy[i];
+                lazy[2 * i + 2] += lazy[i];
             }
-            lazy[node] = 0;
+            lazy[i] = 0;
         }
 
         if (r < x || l > y) return 0;
-        if (x >= l && y <= r) return seg[node];
+        if (x >= l && y <= r) return seg[i];
 
         int m = (x + y) >> 1;
-        int64_t left = query(2 * node + 1, x, m, l, r);
-        int64_t right = query(2 * node + 2, m + 1, y, l, r);
+        int64_t left = query(2 * i + 1, x, m, l, r);
+        int64_t right = query(2 * i + 2, m + 1, y, l, r);
         return left + right;
     }
 
-    void range_update(int node, int x, int y, int l, int r, int val) {
-        if (lazy[node] != 0) {
-            seg[node] += (y - x + 1) * lazy[node];
+    void range_update(int i, int x, int y, int l, int r, int val) {
+        if (lazy[i] != 0) {
+            seg[i] += (y - x + 1) * lazy[i];
             if (x != y) {
-                lazy[2 * node + 1] += lazy[node];
-                lazy[2 * node + 2] += lazy[node];
+                lazy[2 * i + 1] += lazy[i];
+                lazy[2 * i + 2] += lazy[i];
             }
-            lazy[node] = 0;
+            lazy[i] = 0;
         }
 
         if (l > y || r < x || l > r) return;
 
         if (x >= l && y <= r) {
-            seg[node] += (y - x + 1) * val;
+            seg[i] += (y - x + 1) * val;
             if (x != y) {
-                lazy[2 * node + 1] += val;
-                lazy[2 * node + 2] += val;
+                lazy[2 * i + 1] += val;
+                lazy[2 * i + 2] += val;
             }
         } else {
             int m = (x + y) >> 1;
-            range_update(2 * node + 1, x, m, l, r, val);
-            range_update(2 * node + 2, m + 1, y, l, r, val);
-            seg[node] = seg[2 * node + 1] + seg[2 * node + 2];
+            range_update(2 * i + 1, x, m, l, r, val);
+            range_update(2 * i + 2, m + 1, y, l, r, val);
+            seg[i] = seg[2 * i + 1] + seg[2 * i + 2];
         }
     }
 

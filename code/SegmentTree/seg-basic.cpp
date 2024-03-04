@@ -7,36 +7,36 @@ class SegTree {
     vector<int64_t> seg;
     int N;
 
-    void build(int node, int x, int y) {
+    void build(int i, int x, int y) {
         if (x == y) {
-            seg[node] = arr[x];
+            seg[i] = arr[x];
         } else {
             int m = (x + y) >> 1;
-            build(2 * node + 1, x, m);
-            build(2 * node + 2, m + 1, y);
-            seg[node] = seg[2 * node + 1] + seg[2 * node + 2];
+            build(2 * i + 1, x, m);
+            build(2 * i + 2, m + 1, y);
+            seg[i] = seg[2 * i + 1] + seg[2 * i + 2];
         }
     }
 
-    int64_t query(int node, int x, int y, int l, int r) {
-        if (x >= l && y <= r) return seg[node];
+    int64_t query(int i, int x, int y, int l, int r) {
+        if (x >= l && y <= r) return seg[i];
         if (r < x || l > y) return 0;
 
         int m = (x + y) >> 1;
-        int64_t left = query(2 * node + 1, x, m, l, r);
-        int64_t right = query(2 * node + 2, m + 1, y, l, r);
+        int64_t left = query(2 * i + 1, x, m, l, r);
+        int64_t right = query(2 * i + 2, m + 1, y, l, r);
         return left + right;
     }
 
-    void update(int node, int x, int y, int idx, int val) {
+    void update(int i, int x, int y, int node, int val) {
         if (x == y) {
-            arr[idx] += val;
-            seg[node] += val;
+            arr[node] += val;
+            seg[i] += val;
         } else {
             int m = (x + y) >> 1;
-            if (idx >= x && idx <= m) update(2 * node + 1, x, m, idx, val);
-            else update(2 * node + 2, m + 1, y, idx, val);
-            seg[node] = seg[2 * node + 1] ^ seg[2 * node + 2];
+            if (node >= x && node <= m) update(2 * i + 1, x, m, node, val);
+            else update(2 * i + 2, m + 1, y, node, val);
+            seg[i] = seg[2 * i + 1] ^ seg[2 * i + 2];
         }
     }
 
@@ -48,12 +48,12 @@ class SegTree {
         build(0, 0, N - 1);
     }
 
-    int64_t query(int qs, int qe) {
-        return query(0, 0, N - 1, qs, qe);
+    int64_t query(int l, int r) {
+        return query(0, 0, N - 1, l, r);
     }
 
-    void update(int idx, int val) {
-        update(0, 0, N - 1, idx, val);
+    void update(int node, int val) {
+        update(0, 0, N - 1, node, val);
     }
 };
 
