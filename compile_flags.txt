@@ -1,0 +1,12 @@
+-Wall
+-Wextra
+-Wno-unused-result
+-Wno-unused-variable
+-O2
+-g0
+-std=c++2a
+-fsanitize=address
+-fsanitize=undefined
+-fno-sanitize-recover
+-fdiagnostics-color=always
+-I/usr/local/include
