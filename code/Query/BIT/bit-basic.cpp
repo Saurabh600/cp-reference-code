@@ -24,7 +24,7 @@ class FenwickTree {
     bit.resize(n + 1, 0);
   }
 
-  T sum(int i) {
+  T get(int i) {
     T sum = 0;
     for (; i > 0; i -= i & (-i)) {
       sum += bit[i];
@@ -38,7 +38,7 @@ class FenwickTree {
     }
   }
 
-  T sum(int l, int r) {
-    return sum(r) - sum(l - 1);
+  T get(int l, int r) {
+    return get(r) - get(l - 1);
   }
 };
