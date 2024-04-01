@@ -11,12 +11,14 @@ class SegTree {
   }
 
   T query(int l, int r) { return query(0, 0, n - 1, l, r); }
-  void update(int idx, int val) { point_update(0, 0, n - 1, idx, val); }
+  void update(int idx, T val) { point_update(0, 0, n - 1, idx, val); }
 
   private:
   vector<T> tree;
   int n;
   T nval;
+
+  T unite(T a, T b) { return min(a, b); }
 
   template <class M>
   void build(int i, int x, int y, const vector<M>& arr) {
@@ -26,7 +28,7 @@ class SegTree {
       int m = (x + y) >> 1;
       build(2 * i + 1, x, m, arr);
       build(2 * i + 2, m + 1, y, arr);
-      tree[i] = min(tree[2 * i + 1], tree[2 * i + 2]);
+      tree[i] = unite(tree[2 * i + 1], tree[2 * i + 2]);
     }
   }
 
@@ -35,17 +37,17 @@ class SegTree {
     if (l > y || r < x) return nval;
 
     int m = (x + y) >> 1;
-    return min(query(2 * i + 1, x, m, l, r), query(2 * i + 2, m + 1, y, l, r));
+    return unite(query(2 * i + 1, x, m, l, r), query(2 * i + 2, m + 1, y, l, r));
   }
 
-  void point_update(int i, int x, int y, int idx, int val) {
+  void point_update(int i, int x, int y, T idx, int val) {
     if (x == y) {
       tree[i] = val;
     } else {
       int m = (x + y) >> 1;
       if (idx >= x && idx <= m) point_update(2 * i + 1, x, m, idx, val);
       else point_update(2 * i + 2, m + 1, y, idx, val);
-      tree[i] = min(tree[2 * i + 1], tree[2 * i + 2]);
+      tree[i] = unite(tree[2 * i + 1], tree[2 * i + 2]);
     }
   }
 };
@@ -72,5 +74,6 @@ int main() {
       cout << tree.query(l - 1, r - 1) << '\n';
     }
   }
+
   return 0;
 }

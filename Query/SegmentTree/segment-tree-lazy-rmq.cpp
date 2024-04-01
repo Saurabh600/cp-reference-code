@@ -1,67 +1,104 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-using ll = int64_t;
 
-const ll N = 200005;
+template <class T>
+class SegTree {
+  public:
+  template <class M>
+  SegTree(int _n, const vector<M>& arr, T _nval = 0) : n(_n), nval(_nval) {
+    tree.resize(4 * n, 0);
+    lazy.resize(4 * n, 0);
+    build(0, 0, n - 1, arr);
+  }
 
-ll arr[N] = {};
-ll seg[4 * N] = {};
-ll lazy[4 * N] = {};
+  T query(int l, int r) { return query(0, 0, n - 1, l, r); }
+  void range_update(int l, int r, T val) { range_update(0, 0, n - 1, l, r, val); }
 
-void build_tree(ll idx, ll low, ll high) {
-    if (low == high) {
-        seg[idx] = arr[low];
-        return;
+  private:
+  vector<T> tree;
+  vector<T> lazy;
+  int n;
+  T nval;
+
+  T unite(T a, T b) { return min(a, b); }
+
+  template <class M>
+  void build(int i, int x, int y, const vector<M>& arr) {
+    if (x == y) {
+      tree[i] = arr[x];
+    } else {
+      int mid = (x + y) >> 1;
+      build(2 * i + 1, x, mid, arr);
+      build(2 * i + 2, mid + 1, y, arr);
+      tree[i] = unite(tree[2 * i + 1], tree[2 * i + 2]);
+    }
+  }
+
+  T query(int i, int x, int y, int l, int r) {
+    if (lazy[i] != 0) {
+      tree[i] += (y - x + 1) * lazy[i];
+      if (x != y) {
+        lazy[2 * i + 1] += lazy[i];
+        lazy[2 * i + 2] += lazy[i];
+      }
+      lazy[i] = 0;
     }
 
-    ll mid = (low + high) >> 1;
-    build_tree(2 * idx + 1, low, mid);
-    build_tree(2 * idx + 2, mid + 1, high);
-    seg[idx] = seg[2 * idx + 1] + seg[2 * idx + 2];
-}
+    if (l <= x && r >= y) return tree[i];
+    if (l > y || r < x) return nval;
 
-ll query(ll idx, ll low, ll high, ll l, ll r) {
-    if (lazy[idx] != 0) {
-        seg[idx] += (high - low + 1) * lazy[idx];
-        if (low != high) {
-            lazy[2 * idx + 1] += lazy[idx];
-            lazy[2 * idx + 2] += lazy[idx];
-        }
-        lazy[idx] = 0;
+    int m = (x + y) >> 1;
+    return unite(query(2 * i + 1, x, m, l, r), query(2 * i + 2, m + 1, y, l, r));
+  }
+
+  void range_update(int i, int x, int y, int l, int r, T val) {
+    if (lazy[i] != 0) {
+      tree[i] += (y - x + 1) * lazy[i];
+      if (x != y) {
+        lazy[2 * i + 1] += lazy[i];
+        lazy[2 * i + 2] += lazy[i];
+      }
+      lazy[i] = 0;
     }
 
-    if (l <= low && r >= high) return seg[idx];
-    if (l > high || r < low) return 0;
-
-    ll mid = (low + high) >> 1;
-    ll left = query(2 * idx + 1, low, mid, l, r);
-    ll right = query(2 * idx + 2, mid + 1, high, l, r);
-    return left + right;
-}
-
-void range_update(ll idx, ll low, ll high, ll l, ll r, ll val) {
-    if (lazy[idx] != 0) {
-        seg[idx] += (high - low + 1) * lazy[idx];
-        if (low != high) {
-            lazy[2 * idx + 1] += lazy[idx];
-            lazy[2 * idx + 2] += lazy[idx];
-        }
-        lazy[idx] = 0;
+    if (l > y || r < x || x > y) return;
+    if (x >= l && y <= r) {
+      tree[i] += (y - x + 1) * val;
+      if (x != y) {
+        lazy[2 * i + 1] += val;
+        lazy[2 * i + 2] += val;
+      }
+      return;
     }
 
-    if (l > high || r < low || low > high) return;
-    if (low >= l && high <= r) {
-        seg[idx] += (high - low + 1) * val;
-        if (low != high) {
-            lazy[2 * idx + 1] += val;
-            lazy[2 * idx + 2] += val;
-        }
-        return;
-    }
+    int m = (x + y) >> 1;
+    range_update(2 * i + 1, x, m, l, r, val);
+    range_update(2 * i + 2, m + 1, y, l, r, val);
+    tree[i] = unite(tree[2 * i + 1], tree[2 * i + 2]);
+  }
+};
 
-    ll mid = (low + high) >> 1;
-    range_update(2 * idx + 1, low, mid, l, r, val);
-    range_update(2 * idx + 2, mid + 1, high, l, r, val);
-    seg[idx] = seg[2 * idx + 1] + seg[2 * idx + 2];
+int main() {
+  int n, q;
+  cin >> n >> q;
+  vector<int> arr(n);
+  for (auto& i : arr) cin >> i;
+
+  SegTree<long long> tree(n, arr, 1e18);
+
+  while (q--) {
+    int t;
+    cin >> t;
+    if (t == 1) {
+      int l, r, u;
+      cin >> l >> r >> u;
+      tree.range_update(l - 1, r - 1, u);
+    } else {
+      int k;
+      cin >> k;
+      cout << tree.query(k - 1, k - 1) << '\n';
+    }
+  }
+
+  return 0;
 }

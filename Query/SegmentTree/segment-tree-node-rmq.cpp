@@ -3,7 +3,7 @@ using namespace std;
 
 const int inf = int(1e9);
 
-class segtree {
+class SegTree {
   public:
   struct node {
     int mn = inf;
@@ -11,13 +11,13 @@ class segtree {
   };
 
   template <class M>
-  segtree(int _n, const vector<M> &arr) : n(_n) {
+  SegTree(int _n, const vector<M> &arr) : n(_n) {
     tree.resize(4 * n);
     build(0, 0, n - 1, arr);
   }
 
   node query(int l, int r) { return query(0, 0, n - 1, l, r); }
-  void update(int idx, int val) { point_update(0, 0, n - 1, idx, val); }
+  void update(int idx, int64_t val) { point_update(0, 0, n - 1, idx, val); }
 
   private:
   int n;
@@ -49,7 +49,7 @@ class segtree {
     return unite(query(2 * i + 1, x, m, l, r), query(2 * i + 2, m + 1, y, l, r));
   }
 
-  void point_update(int i, int x, int y, int idx, int val) {
+  void point_update(int i, int x, int y, int idx, int64_t val) {
     if (x == y) {
       tree[i].apply(val);
     } else {
@@ -67,7 +67,7 @@ int main() {
   vector<int> arr(n);
   for (int &i : arr) cin >> i;
 
-  segtree tree(n, arr);
+  SegTree tree(n, arr);
 
   while (q--) {
     int t;
