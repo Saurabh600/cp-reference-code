@@ -1,47 +1,33 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-using ll = int64_t;
 
-const ll N = 1e6;
-const ll M = 1e3;
+typedef long long ll;
 
-ll arr[N];
-ll block[M];
-ll blk_size;
+const int MAXN = 1e6;
+const int MAXB = 1e3;
 
-void preprocess(ll n) {
-    blk_size = sqrt(n);
-    ll idx = -1;
-    for (ll i = 0; i < n; i++) {
-        if (i % blk_size == 0) idx++;
-        block[idx] += arr[i];
-    }
+ll arr[MAXN];
+ll block[MAXB];
+int B;
+
+void preprocess(int n) {
+  B = sqrt(n);
+  int idx = -1;
+  for (int i = 0; i < n; i++) {
+    if (i % B == 0) idx++;
+    block[idx] += arr[i];
+  }
 }
 
-void update(ll idx, ll val) {
-    ll blk_idx = idx / blk_size;
-    block[blk_idx] += val - arr[idx];
-    arr[idx] = val;
+void update(int idx, ll val) {
+  block[idx / B] += val - arr[idx];
+  arr[idx] = val;
 }
 
-ll query(ll l, ll r) {
-    ll sum = 0;
-
-    while (l < r && l % blk_size != 0) {
-        sum += arr[l];
-        l++;
-    }
-
-    while (l + blk_size - 1 <= r) {
-        sum += block[l / blk_size];
-        l += blk_size;
-    }
-
-    while (l <= r) {
-        sum += arr[l];
-        l++;
-    }
-
-    return sum;
+ll query(int l, int r) {
+  ll sum = 0;
+  while (l < r && l % B != 0) sum += arr[l], l++;
+  while (l + B - 1 <= r) sum += block[l / B], l += B;
+  while (l <= r) sum += arr[l], l++;
+  return sum;
 }
