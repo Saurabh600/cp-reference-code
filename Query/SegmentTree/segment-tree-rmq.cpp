@@ -1,24 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <class T>
 class SegTree {
   public:
   template <class M>
-  SegTree(int _n, const vector<M>& arr, T _nval = 0) : n(_n), nval(_nval) {
+  SegTree(int _n, const vector<M>& arr, long long _nval = 0) : n(_n), nval(_nval) {
     tree.resize(4 * n);
     build(0, 0, n - 1, arr);
   }
 
-  T query(int l, int r) { return query(0, 0, n - 1, l, r); }
-  void update(int idx, T val) { point_update(0, 0, n - 1, idx, val); }
+  long long query(int l, int r) { return query(0, 0, n - 1, l, r); }
+  void update(int idx, long long val) { update(0, 0, n - 1, idx, val); }
 
   private:
-  vector<T> tree;
+  std::vector<long long> tree;
   int n;
-  T nval;
+  long long nval;
 
-  T unite(T a, T b) { return min(a, b); }
+  long long unite(long long a, long long b) { return min(a, b); }
 
   template <class M>
   void build(int i, int x, int y, const vector<M>& arr) {
@@ -32,7 +31,7 @@ class SegTree {
     }
   }
 
-  T query(int i, int x, int y, int l, int r) {
+  long long query(int i, int x, int y, int l, int r) {
     if (l <= x && r >= y) return tree[i];
     if (l > y || r < x) return nval;
 
@@ -40,13 +39,13 @@ class SegTree {
     return unite(query(2 * i + 1, x, m, l, r), query(2 * i + 2, m + 1, y, l, r));
   }
 
-  void point_update(int i, int x, int y, T idx, int val) {
+  void update(int i, int x, int y, int idx, long long val) {
     if (x == y) {
       tree[i] = val;
     } else {
       int m = (x + y) >> 1;
-      if (idx >= x && idx <= m) point_update(2 * i + 1, x, m, idx, val);
-      else point_update(2 * i + 2, m + 1, y, idx, val);
+      if (idx >= x && idx <= m) update(2 * i + 1, x, m, idx, val);
+      else update(2 * i + 2, m + 1, y, idx, val);
       tree[i] = unite(tree[2 * i + 1], tree[2 * i + 2]);
     }
   }
@@ -59,7 +58,7 @@ int main() {
   vector<int> arr(n);
   for (auto& i : arr) cin >> i;
 
-  SegTree<int> tree(n, arr, 1e9);
+  SegTree tree(n, arr, 1e9);
 
   while (q--) {
     int t;

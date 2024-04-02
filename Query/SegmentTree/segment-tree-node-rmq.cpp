@@ -1,13 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int inf = int(1e9);
-
 class SegTree {
   public:
   struct node {
-    int mn = inf;
-    void apply(int v) { mn = v; }
+    long long mn = 1e18;
+    void apply(long long v) { mn = v; }
   };
 
   template <class M>
@@ -17,11 +15,11 @@ class SegTree {
   }
 
   node query(int l, int r) { return query(0, 0, n - 1, l, r); }
-  void update(int idx, int64_t val) { point_update(0, 0, n - 1, idx, val); }
+  void update(int idx, long long val) { point_update(0, 0, n - 1, idx, val); }
 
   private:
   int n;
-  vector<node> tree;
+  std::vector<node> tree;
 
   node unite(const node &n1, const node &n2) const {
     node res;
@@ -49,7 +47,7 @@ class SegTree {
     return unite(query(2 * i + 1, x, m, l, r), query(2 * i + 2, m + 1, y, l, r));
   }
 
-  void point_update(int i, int x, int y, int idx, int64_t val) {
+  void point_update(int i, int x, int y, int idx, long long val) {
     if (x == y) {
       tree[i].apply(val);
     } else {

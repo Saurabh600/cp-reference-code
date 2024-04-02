@@ -1,44 +1,32 @@
 #include <bits/stdc++.h>
 
-template <class T>
 class FenwickTree {
-  public:
-  std::vector<T> bit;
+  private:
+  std::vector<long long> tree;
   int n;
 
+  public:
+  FenwickTree(int _n) : n(_n) { tree.assign(n + 1, 0); }
+
   template <class M>
-  FenwickTree(std::vector<M>& v) {
-    n = v.size();
-    bit.resize(n + 1, 0);
+  FenwickTree(int _n, const std::vector<M>& arr) : n(_n) {
+    tree.assign(n + 1, 0);
     for (int i = 1; i <= n; i++) {
-      bit[i] += v[i - 1];
-      T rsb = i & (-i);
-      if (i + rsb <= n) {
-        bit[i + rsb] += bit[i];
-      }
+      tree[i] += arr[i - 1];
+      int rsb = i & -i;
+      if (i + rsb <= n) tree[i + rsb] += tree[i];
     }
   }
 
-  FenwickTree(int n) {
-    this->n = n;
-    bit.resize(n + 1, 0);
-  }
-
-  T get(int i) {
-    T sum = 0;
-    for (; i > 0; i -= i & (-i)) {
-      sum += bit[i];
-    }
+  long long get(int i) {
+    long long sum = 0;
+    for (; i > 0; i -= i & -i) sum += tree[i];
     return sum;
   }
 
-  void update(int i, int x) {
-    for (; i <= n; i += i & (-i)) {
-      bit[i] += x;
-    }
+  void update(int i, long long x) {
+    for (; i <= n; i += i & -i) tree[i] += x;
   }
 
-  T get(int l, int r) {
-    return get(r) - get(l - 1);
-  }
+  long long get(int l, int r) { return get(r) - get(l - 1); }
 };

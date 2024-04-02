@@ -1,26 +1,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <class T>
 class SegTree {
   public:
   template <class M>
-  SegTree(int _n, const vector<M>& arr, T _nval = 0) : n(_n), nval(_nval) {
-    tree.resize(4 * n, 0);
-    lazy.resize(4 * n, 0);
+  SegTree(int _n, const vector<M>& arr, long long _nval = 0) : n(_n), nval(_nval) {
+    tree.assign(4 * n, 0);
+    lazy.assign(4 * n, 0);
     build(0, 0, n - 1, arr);
   }
 
-  T query(int l, int r) { return query(0, 0, n - 1, l, r); }
-  void range_update(int l, int r, T val) { range_update(0, 0, n - 1, l, r, val); }
+  long long query(int l, int r) { return query(0, 0, n - 1, l, r); }
+  void range_update(int l, int r, long long val) { range_update(0, 0, n - 1, l, r, val); }
 
   private:
-  vector<T> tree;
-  vector<T> lazy;
+  vector<long long> tree;
+  vector<long long> lazy;
   int n;
-  T nval;
+  long long nval;
 
-  T unite(T a, T b) { return min(a, b); }
+  long long unite(long long a, long long b) { return min(a, b); }
 
   template <class M>
   void build(int i, int x, int y, const vector<M>& arr) {
@@ -34,7 +33,7 @@ class SegTree {
     }
   }
 
-  T query(int i, int x, int y, int l, int r) {
+  long long query(int i, int x, int y, int l, int r) {
     if (lazy[i] != 0) {
       tree[i] += (y - x + 1) * lazy[i];
       if (x != y) {
@@ -51,7 +50,7 @@ class SegTree {
     return unite(query(2 * i + 1, x, m, l, r), query(2 * i + 2, m + 1, y, l, r));
   }
 
-  void range_update(int i, int x, int y, int l, int r, T val) {
+  void range_update(int i, int x, int y, int l, int r, long long val) {
     if (lazy[i] != 0) {
       tree[i] += (y - x + 1) * lazy[i];
       if (x != y) {
@@ -84,7 +83,7 @@ int main() {
   vector<int> arr(n);
   for (auto& i : arr) cin >> i;
 
-  SegTree<long long> tree(n, arr, 1e18);
+  SegTree tree(n, arr, 1e18);
 
   while (q--) {
     int t;
