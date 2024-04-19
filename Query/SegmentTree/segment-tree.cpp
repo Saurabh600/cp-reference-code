@@ -1,52 +1,55 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <class T = int>
 class SegTree {
+#define lc(i) 2 * i + 1
+#define rc(i) 2 * i + 2
+
+  T N, default_value;
+  vector<T> seg;
+  function<T(T, T)> unite;
+
   public:
-  template <class T>
-  SegTree(int size, T& A, long long def_value = 0) : n(size), iota(def_value) {
-    tree.resize(4 * size);
-    build(0, 0, size - 1, A);
+  template <class M>
+  SegTree(vector<M> A, T default_val = 0, function<T(T, T)> unite_fn = plus<T>())
+      : N(A.size()), default_value(default_val), unite(unite_fn) {
+    seg.resize(4 * N);
+    build(0, 0, N - 1, A);
   }
 
-  long long query(int qs, int qe) { return query(0, 0, n - 1, qs, qe); }
-  void update(int arrInd, long long value) { update(0, 0, n - 1, arrInd, value); }
+  T query(T l, T r) { return query(0, 0, N - 1, l, r); }
+  void update(T pos, T new_val) { update(0, 0, N - 1, pos, new_val); }
 
   private:
-  vector<long long> tree;
-  int n;
-  long long iota;
-
-  long long unite(long long a, long long b) { return min(a, b); }
-
-  template <class T>
-  void build(int si, int ss, int se, T& A) {
-    if (ss == se) {
-      tree[si] = A[ss];
+  template <class M>
+  void build(T v, T tl, T tr, vector<M>& A) {
+    if (tl == tr) {
+      seg[v] = A[tl];
     } else {
-      int mid = (ss + se) >> 1;
-      build(2 * si + 1, ss, mid, A);
-      build(2 * si + 2, mid + 1, se, A);
-      tree[si] = unite(tree[2 * si + 1], tree[2 * si + 2]);
+      T tm = (tl + tr) >> 1;
+      build(lc(v), tl, tm, A);
+      build(rc(v), tm + 1, tr, A);
+      seg[v] = unite(seg[lc(v)], seg[rc(v)]);
     }
   }
 
-  long long query(int si, int ss, int se, int qs, int qe) {
-    if (qs <= ss && qe >= se) return tree[si];
-    if (qs > se || qe < ss) return iota;
+  T query(T v, T tl, T tr, T l, T r) {
+    if (l <= tl && r >= tr) return seg[v];
+    if (l > tr || r < tl || l > r) return default_value;
 
-    int mid = (ss + se) >> 1;
-    return unite(query(2 * si + 1, ss, mid, qs, qe), query(2 * si + 2, mid + 1, se, qs, qe));
+    T tm = (tl + tr) >> 1;
+    return unite(query(lc(v), tl, tm, l, r), query(rc(v), tm + 1, tr, l, r));
   }
 
-  void update(int si, int ss, int se, int arrInd, long long value) {
-    if (ss == se) {
-      tree[si] = value;
+  void update(T v, T tl, T tr, T pos, T new_val) {
+    if (tl == tr) {
+      seg[v] = new_val;
     } else {
-      int mid = (ss + se) >> 1;
-      if (arrInd >= ss && arrInd <= mid) update(2 * si + 1, ss, mid, arrInd, value);
-      else update(2 * si + 2, mid + 1, se, arrInd, value);
-      tree[si] = unite(tree[2 * si + 1], tree[2 * si + 2]);
+      T tm = (tl + tr) >> 1;
+      if (pos >= tl && pos <= tm) update(lc(v), tl, tm, pos, new_val);
+      else update(rc(v), tm + 1, tr, pos, new_val);
+      seg[v] = unite(seg[lc(v)], seg[rc(v)]);
     }
   }
 };
