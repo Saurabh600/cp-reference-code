@@ -1,32 +1,32 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class FenwickTree {
-  private:
-  vector<long long> tree;
-  int n;
+template <class T = int>
+struct BIT {
+  T N;
+  vector<T> bit;
 
-  public:
-  FenwickTree(int size) : n(size + 1) { tree.assign(n, 0); }
+  BIT(T n) : N(n + 1) { bit.assign(N, 0); }
 
-  template <class T>
-  FenwickTree(int size, T& A) : FenwickTree(size) {
-    for (int i = 1; i < n; i++) {
-      tree[i] += A[i - 1];
-      int rsb = i & -i;
-      if (i + rsb < n) tree[i + rsb] += tree[i];
+  template <class U>
+  BIT(T n, U& A) : BIT(n) {
+    for (T i = 1; i < N; i++) {
+      bit[i] += A[i - 1];
+      T rsb = i & -i;
+      if (i + rsb < N) bit[i + rsb] += bit[i];
     }
   }
 
-  long long get(int i) {
-    long long sum = 0;
-    for (; i > 0; i -= i & -i) sum += tree[i];
+  T query(T i) {
+    T sum = 0;
+    for (; i > 0; i -= i & -i) sum += bit[i];
     return sum;
   }
 
-  void update(int i, long long x) {
-    for (; i < n; i += i & -i) tree[i] += x;
+  void update(T i, T val) {
+    assert(i > 0);
+    for (; i < N; i += i & -i) bit[i] += val;
   }
 
-  long long get(int l, int r) { return get(r) - get(l - 1); }
+  T query(T l, T r) { return query(r) - query(l - 1); }
 };

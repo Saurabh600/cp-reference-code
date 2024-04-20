@@ -1,78 +1,77 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <class T = int>
 class SegTree {
-  public:
-  template <class T>
-  SegTree(int size, T& A, long long def_value = 0) : n(size), iota(def_value) {
-    tree.resize(4 * n);
-    lazy.resize(4 * n);
-    build(0, 0, n - 1, A);
-  }
+#define lc(i) 2 * i + 1
+#define rc(i) 2 * i + 2
 
-  long long query(int qs, int qe) { return query(0, 0, n - 1, qs, qe); }
-  void range_update(int qs, int qe, long long value) { range_update(0, 0, n - 1, qs, qe, value); }
+  T N, default_val;
+  vector<T> tree;
+  vector<T> lazy;
 
-  private:
-  vector<long long> tree;
-  vector<long long> lazy;
-  int n;
-  long long iota;
-
-  long long unite(long long a, long long b) { return min(a, b); }
-
-  template <class T>
-  void build(int si, int ss, int se, T& A) {
-    if (ss == se) {
-      tree[si] = A[ss];
+  template <class U>
+  void buildTree(T v, T tl, T tr, vector<U>& A) {
+    if (tl == tr) {
+      tree[v] = A[tl];
     } else {
-      int mid = (ss + se) >> 1;
-      build(2 * si + 1, ss, mid, A);
-      build(2 * si + 2, mid + 1, se, A);
-      tree[si] = unite(tree[2 * si + 1], tree[2 * si + 2]);
+      T tm = (tl + tr) >> 1;
+      buildTree(2 * v + 1, tl, tm, A);
+      buildTree(2 * v + 2, tm + 1, tr, A);
+      tree[v] = unite(tree[lc(v)], tree[rc(v)]);
     }
   }
 
-  long long query(int si, int ss, int se, int qs, int qe) {
-    if (lazy[si] != 0) {
-      tree[si] += (se - ss + 1) * lazy[si];
-      if (ss != se) {
-        lazy[2 * si + 1] += lazy[si];
-        lazy[2 * si + 2] += lazy[si];
+  void applyLazyUpdates(T v, T tl, T tr) {
+    if (lazy[v] != 0) {
+      tree[v] += (tr - tl + 1) * lazy[v];
+      if (tl != tr) {
+        lazy[lc(v)] += lazy[v];
+        lazy[rc(v)] += lazy[v];
       }
-      lazy[si] = 0;
+      lazy[v] = 0;
     }
-
-    if (qs <= ss && qe >= se) return tree[si];
-    if (qs > se || qe < ss) return iota;
-
-    int mid = (ss + se) >> 1;
-    return unite(query(2 * si + 1, ss, mid, qs, qe), query(2 * si + 2, mid + 1, se, qs, qe));
   }
 
-  void range_update(int si, int ss, int se, int qs, int qe, long long value) {
-    if (lazy[si] != 0) {
-      tree[si] += (se - ss + 1) * lazy[si];
-      if (ss != se) {
-        lazy[2 * si + 1] += lazy[si];
-        lazy[2 * si + 2] += lazy[si];
-      }
-      lazy[si] = 0;
+  void pushDown(T v, T tl, T tr, T val) {
+    tree[v] += (tr - tl + 1) * val;
+    if (tl != tr) {
+      lazy[lc(v)] += val;
+      lazy[rc(v)] += val;
     }
+  }
 
-    if (qs > se || qe < ss || ss > se) return;
-    if (ss >= qs && se <= qe) {
-      tree[si] += (se - ss + 1) * value;
-      if (ss != se) {
-        lazy[2 * si + 1] += value;
-        lazy[2 * si + 2] += value;
-      }
+  T query(T v, T tl, T tr, T l, T r) {
+    applyLazyUpdates(v, tl, tr);
+    if (l <= tl && r >= tr) return tree[v];
+    if (l > tr || r < tl || l > r) return default_val;
+    T tm = (tl + tr) >> 1;
+    return unite(query(lc(v), tl, tm, l, r), query(rc(v), tm + 1, tr, l, r));
+  }
+
+  void rangeUpdate(T v, T tl, T tr, T l, T r, T val) {
+    applyLazyUpdates(v, tl, tr);
+    if (l > tr || r < tl || l > r) return;
+    if (tl >= l && tr <= r) {
+      pushDown(v, tl, tr, val);
       return;
     }
-
-    int mid = (ss + se) >> 1;
-    range_update(2 * si + 1, ss, mid, qs, qe, value);
-    range_update(2 * si + 2, mid + 1, se, qs, qe, value);
-    tree[si] = unite(tree[2 * si + 1], tree[2 * si + 2]);
+    T tm = (tl + tr) >> 1;
+    rangeUpdate(lc(v), tl, tm, l, r, val);
+    rangeUpdate(rc(v), tm + 1, tr, l, r, val);
+    tree[v] = unite(tree[lc(v)], tree[rc(v)]);
   }
+
+  T unite(T a, T b) { return min(a, b); }
+
+  public:
+  template <class U>
+  SegTree(vector<U> A, T default_val = 0) : N(A.size()), default_val(default_val) {
+    tree.resize(4 * N);
+    lazy.resize(4 * N);
+    buildTree(0, 0, N - 1, A);
+  }
+
+  T query(T l, T r) { return query(0, 0, N - 1, l, r); }
+  void rangeUpdate(T l, T r, T val) { rangeUpdate(0, 0, N - 1, l, r, val); }
 };
