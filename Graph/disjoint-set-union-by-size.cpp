@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct DisjointSet {
-  public:
+class dsu {
   vector<int> parent, size;
 
-  DisjointSet(int n) {
+  public:
+  dsu(int n) {
     parent.resize(n);
     size.resize(n);
     for (int v = 0; v < n; v++) {
@@ -13,6 +13,8 @@ struct DisjointSet {
       size[v] = 1;
     }
   }
+
+  int get_size(int v) { return size[v]; }
 
   int find(int v) {
     if (v == parent[v]) return v;

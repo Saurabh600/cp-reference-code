@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct DisjointSet {
-  public:
+struct dsu {
   vector<int> parent, rank;
 
-  DisjointSet(int n) {
+  public:
+  dsu(int n) {
     parent.resize(n);
     rank.resize(n);
     for (int v = 0; v < n; v++) {
