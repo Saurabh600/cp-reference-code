@@ -2,14 +2,14 @@
 using namespace std;
 
 template <class T = int>
-struct BIT {
+struct fenwick {
   T N;
   vector<T> bit;
 
-  BIT(T n) : N(n + 1) { bit.assign(N, 0); }
+  fenwick(T n) : N(n + 1) { bit.assign(N, 0); }
 
   template <class U>
-  BIT(T n, U& A) : BIT(n) {
+  fenwick(T n, U& A) : fenwick(n) {
     for (T i = 1; i < N; i++) {
       bit[i] += A[i - 1];
       T rsb = i & -i;
