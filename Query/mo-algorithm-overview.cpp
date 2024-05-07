@@ -1,59 +1,64 @@
-/**
-  author: Saurabh Chaudhary (Saurabh600)
-  created: 11.04.2024 17:39:35
-*/
 #include <bits/stdc++.h>
 using namespace std;
 
 typedef long long ll;
 typedef long double ld;
 
-#ifdef LOCAL_RUN
-#include "debug.h"
-#else
-#define debug(...) 42
-#endif
+int main() {
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
 
-signed main() {
-  ios_base::sync_with_stdio(0), cin.tie(0);
+  ll n, t;
+  cin >> n >> t;
 
-  int n, q;
-  cin >> n >> q;
-  vector<int> arr(n);
-  for (auto& i : arr) cin >> i;
+  vector<ll> a(n);
+  for (auto& i : a) cin >> i;
+  vector<array<ll, 3>> query(t);
 
-  vector<vector<int>> query(q);
-  for (int i = 0; i < q; i++) {
-    int l, r;
+  ll l, r;
+  for (int i = 0; i < t; i++) {
     cin >> l >> r;
-    query[i] = vector<int>{--l, --r, i};
+    query[i] = {--l, --r, i};
   }
 
-  int B = sqrt(n);
-  sort(query.begin(), query.end(), [B](auto& q1, auto& q2) {
-    auto l1 = q1[0], r1 = q1[1];
-    auto l2 = q2[0], r2 = q2[1];
-
-    if (l1 / B != l2 / B) return l1 / B < l2 / B;
-    return r1 < r2;
+  ll B = sqrt(n) + 1;
+  sort(query.begin(), query.end(), [B](auto& a, auto& b) {
+    if (a[0] / B != b[0] / B) return a[0] / B < b[0] / B;
+    return a[1] < b[1];
   });
 
-  int currL = 0, currR = 0;
-  long long sum = 0;
-  vector<long long> ans(q);
-  for (auto& it : query) {
-    auto L = it[0], R = it[1], ind = it[2];
+  vector<ll> res(t);
+  vector<ll> freq(int(1e6 + 10));
+  ll ans = 0;
 
-    while (currL < L) sum -= arr[currL++];
-    while (currL > L) sum += arr[--currL];
+  auto add = [&](ll x) {
+    ll it = a[x];
+    ans -= freq[it] * freq[it] * it;
+    freq[it]++;
+    ans += freq[it] * freq[it] * it;
+  };
 
-    while (currR < R + 1) sum += arr[currR++];
-    while (currR > R + 1) sum -= arr[--currR];
+  auto remove = [&](ll x) {
+    ll it = a[x];
+    ans -= freq[it] * freq[it] * it;
+    freq[it]--;
+    ans += freq[it] * freq[it] * it;
+  };
 
-    ans[ind] = sum;
+  ll currL = 0, currR = -1;
+  for (auto& q : query) {
+    l = q[0], r = q[1];
+
+    while (currL > l) currL--, add(currL);
+    while (currR < r) currR++, add(currR);
+
+    while (currL < l) remove(currL), currL++;
+    while (currR > r) remove(currR), currR--;
+
+    res[q[2]] = ans;
   }
 
-  for (auto v : ans) cout << v << '\n';
+  for (auto i : res) cout << i << '\n';
 
   return 0;
 }

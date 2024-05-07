@@ -1,42 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAXN = 2e5 + 5;
-const int LOG = 20;
-int m[MAXN][LOG];
-int bin_log[MAXN];
+class sparse_table {
+  int n, LOG;
+  vector<vector<int>> dp;
 
-int query(int l, int r) {
-  int len = r - l + 1;
-  // int k = bin_log[len];
-  int k = 31 - __builtin_clz(len);
-  return min(m[l][k], m[r - (1 << k) + 1][k]);
-}
+  public:
+  template <class T>
+  sparse_table(const T &arr) {
+    n = arr.size();
+    LOG = int(log2(n)) + 1;
+    dp.resize(n, vector<int>(LOG));
 
-void preprocess(int arr[], int n) {
-  bin_log[1] = 0;
-  for (int i = 2; i <= n; i++) bin_log[i] = bin_log[i / 2] + 1;
-  for (int i = 1; i <= n; i++) m[i][0] = arr[i];
-
-  for (int k = 1; k < LOG; k++) {
-    for (int i = 1; i + (1 << k) - 1 <= n; i++) {
-      m[i][k] = min(m[i][k - 1], m[i + (1 << (k - 1))][k - 1]);
+    for (int i = 0; i < n; i++) dp[i][0] = arr[i];
+    for (int k = 1; k < LOG; k++) {
+      for (int i = 0; i + (1 << k) - 1 < n; i++) {
+        dp[i][k] = min(dp[i][k - 1], dp[i + (1 << (k - 1))][k - 1]);
+      }
     }
   }
-}
+
+  int query(int l, int r) {
+    int k = 31 - __builtin_clz(r - l + 1);
+    return min(dp[l][k], dp[r - (1 << k) + 1][k]);
+  }
+};
 
 int main() {
   int n, q;
   cin >> n >> q;
-  int arr[n + 1];
-  for (int i = 1; i <= n; i++) cin >> arr[i];
+  vector<int> arr(n);
+  for (auto &i : arr) cin >> i;
 
-  preprocess(arr, n);
+  sparse_table st(arr);
 
   while (q--) {
     int l, r;
     cin >> l >> r;
-    cout << query(l, r) << '\n';
+    l--, r--;
+    cout << st.query(l, r) << '\n';
   }
   return 0;
 }

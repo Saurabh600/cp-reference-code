@@ -1,54 +1,53 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <class T = int>
-class SegTree {
-#define lc(i) 2 * i + 1
-#define rc(i) 2 * i + 2
+#define lc(i) (2 * i + 1)
+#define rc(i) (2 * i + 2)
 
-  T N, default_val;
+template <class T = int>
+class seg_tree {
+  public:
+  template <class M>
+  seg_tree(const M& arr, T _def, function<T(T, T)> fn) : n(arr.size()), def(_def), unite(fn) {
+    tree.resize(n << 2);
+    build(0, 0, n - 1, arr);
+  }
+
+  T query(T l, T r) { return query(0, 0, n - 1, l, r); }
+  void update(T pos, T val) { update(0, 0, n - 1, pos, val); }
+
+  private:
+  T n, def;
   vector<T> tree;
   function<T(T, T)> unite;
 
   template <class M>
-  void buildTree(T v, T tl, T tr, vector<M>& A) {
-    if (tl == tr) {
-      tree[v] = A[tl];
+  void build(T i, T x, T y, const M& arr) {
+    if (x == y) {
+      tree[i] = arr[x];
     } else {
-      T tm = (tl + tr) >> 1;
-      buildTree(lc(v), tl, tm, A);
-      buildTree(rc(v), tm + 1, tr, A);
-      tree[v] = unite(tree[lc(v)], tree[rc(v)]);
+      T m = (x + y) >> 1;
+      build(lc(i), x, m, arr);
+      build(rc(i), m + 1, y, arr);
+      tree[i] = unite(tree[lc(i)], tree[rc(i)]);
     }
   }
 
-  T query(T v, T tl, T tr, T l, T r) {
-    if (l <= tl && r >= tr) return tree[v];
-    if (l > tr || r < tl || l > r) return default_val;
-
-    T tm = (tl + tr) >> 1;
-    return unite(query(lc(v), tl, tm, l, r), query(rc(v), tm + 1, tr, l, r));
+  T query(T i, T x, T y, T l, T r) {
+    if (l > y || r < x || l > r) return def;
+    if (l <= x && r >= y) return tree[i];
+    T tm = (x + y) >> 1;
+    return unite(query(lc(i), x, tm, l, r), query(rc(i), tm + 1, y, l, r));
   }
 
-  void update(T v, T tl, T tr, T pos, T new_val) {
-    if (tl == tr) {
-      tree[v] = new_val;
+  void update(T i, T x, T y, T pos, T val) {
+    if (x == y) {
+      tree[i] = val;
     } else {
-      T tm = (tl + tr) >> 1;
-      if (pos >= tl && pos <= tm) update(lc(v), tl, tm, pos, new_val);
-      else update(rc(v), tm + 1, tr, pos, new_val);
-      tree[v] = unite(tree[lc(v)], tree[rc(v)]);
+      T m = (x + y) >> 1;
+      if (pos >= x && pos <= m) update(lc(i), x, m, pos, val);
+      else update(rc(i), m + 1, y, pos, val);
+      tree[i] = unite(tree[lc(i)], tree[rc(i)]);
     }
   }
-
-  public:
-  template <class M>
-  SegTree(vector<M> A, T default_val = 0, function<T(T, T)> unite_fn = plus<T>())
-      : N(A.size()), default_val(default_val), unite(unite_fn) {
-    tree.resize(4 * N);
-    buildTree(0, 0, N - 1, A);
-  }
-
-  T query(T l, T r) { return query(0, 0, N - 1, l, r); }
-  void update(T pos, T new_val) { update(0, 0, N - 1, pos, new_val); }
 };
