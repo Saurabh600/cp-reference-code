@@ -35,12 +35,12 @@ int main() {
   int num = 1185800;
   map<int, int> mp;
   while (num > 1) {
-    int fact = hp[num];
-    while (num % fact == 0) {
-      num /= fact;
-      mp[fact]++;
-    }
+    int fact = hp[num], cnt = 0;
+    while (num % fact == 0) num /= fact, cnt++;
+    if (cnt) mp[fact] = cnt;
   }
+
+  vector<pair<int, int>> f(mp.begin(), mp.end());
 
   return 0;
 }
